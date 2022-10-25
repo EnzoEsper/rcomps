@@ -1,5 +1,5 @@
 import React from "react";
-import { data } from "../../SpeakerData";
+
 import Header from "./Header";
 import Speakers from "./Speakers";
 
@@ -9,7 +9,7 @@ const App = () => {
   return (
     <div className={theme === "light" ? "container-fluid light" : "container-fluid dark"}>
       <Header theme={theme} />
-      <Speakers data={data} theme={theme} setTheme={setTheme} />
+      <Speakers theme={theme} setTheme={setTheme} />
     </div>
   );
 };
