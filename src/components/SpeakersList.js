@@ -1,16 +1,28 @@
 import React, { useEffect } from "react";
 import Speaker from "./Speaker";
 import { data } from "../../SpeakerData";
+import ReactPlaceHolder from "react-placeholder";
 
 const SpeakersList = ({ showSessions }) => {
   const [speakerData, setSpeakerData] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [hasErrored, setHasErrored] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   useEffect(() => {
     const delayFunc = async () => {
-      await delay(2000);
-      setSpeakerData(data);
+      try {
+        await delay(2000);
+        // throw "Had Error.";
+        setIsLoading(false);
+        setSpeakerData(data);
+      } catch (error) {
+        setIsLoading(false);
+        setHasErrored(true);
+        setErrorMessage(error);
+      }
     };
     delayFunc();
   }, []);
@@ -30,22 +42,34 @@ const SpeakersList = ({ showSessions }) => {
     setSpeakerData(speakersDataNew);
   }
 
+  if (hasErrored === true) {
+    return (
+      <div className="text-danger">
+        Error: <b>loading Speaker Data Failed {errorMessage}</b>
+      </div>
+    );
+  }
+
+  // if (isLoading === true) return <div>Loading...</div>;
+
   return (
     <div className="container speakers-list">
-      <div className="row">
-        {speakerData.map(function (speaker) {
-          return (
-            <Speaker
-              speaker={speaker}
-              key={speaker.id}
-              showSessions={showSessions}
-              onFavoriteToggle={() => {
-                onFavoriteToggle(speaker.id);
-              }}
-            />
-          );
-        })}
-      </div>
+      <ReactPlaceHolder type="media" rows={15} className="speakerslist-placeholder" ready={isLoading === false}>
+        <div className="row">
+          {speakerData.map(function (speaker) {
+            return (
+              <Speaker
+                speaker={speaker}
+                key={speaker.id}
+                showSessions={showSessions}
+                onFavoriteToggle={() => {
+                  onFavoriteToggle(speaker.id);
+                }}
+              />
+            );
+          })}
+        </div>
+      </ReactPlaceHolder>
     </div>
   );
 };
