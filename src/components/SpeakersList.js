@@ -1,46 +1,10 @@
 import React, { useEffect } from "react";
 import Speaker from "./Speaker";
-import { data } from "../../SpeakerData";
 import ReactPlaceHolder from "react-placeholder";
+import useRequestSpeakers from "../hooks/useRequestSpeakers";
 
 const SpeakersList = ({ showSessions }) => {
-  const [speakerData, setSpeakerData] = React.useState([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [hasErrored, setHasErrored] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
-
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  useEffect(() => {
-    const delayFunc = async () => {
-      try {
-        await delay(2000);
-        // throw "Had Error.";
-        setIsLoading(false);
-        setSpeakerData(data);
-      } catch (error) {
-        setIsLoading(false);
-        setHasErrored(true);
-        setErrorMessage(error);
-      }
-    };
-    delayFunc();
-  }, []);
-
-  function onFavoriteToggle(id) {
-    const speakersRecPrevious = speakerData.find((speaker) => speaker.id === id);
-
-    const speakerRecUpdated = {
-      ...speakersRecPrevious,
-      favorite: !speakersRecPrevious.favorite,
-    };
-
-    const speakersDataNew = speakerData.map((speaker) => {
-      return speaker.id === id ? speakerRecUpdated : speaker;
-    });
-
-    setSpeakerData(speakersDataNew);
-  }
+  const { speakersData, isLoading, hasErrored, errorMessage, onFavoriteToggle } = useRequestSpeakers(2000);
 
   if (hasErrored === true) {
     return (
@@ -56,7 +20,7 @@ const SpeakersList = ({ showSessions }) => {
     <div className="container speakers-list">
       <ReactPlaceHolder type="media" rows={15} className="speakerslist-placeholder" ready={isLoading === false}>
         <div className="row">
-          {speakerData.map(function (speaker) {
+          {speakersData.map(function (speaker) {
             return (
               <Speaker
                 speaker={speaker}
